@@ -1,0 +1,12 @@
+let BadDomains = _GetWatchlist("M-Domains")
+    | project MaliciousDomains;
+Event
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| where EventID == 22
+| extend
+    QueryName = tostring(parse_xml(EventData).DataItem.EventData.Data[4]['#text']),
+    Image = tostring(parse_xml(EventData).DataItem.EventData.Data[10]['#text']),
+    Computer = tostring(Computer)
+| where QueryName has_any (BadDomains)
+| project TimeGenerated, Computer, QueryName, Image
+| sort by TimeGenerated desc

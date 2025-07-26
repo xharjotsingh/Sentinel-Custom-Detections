@@ -1,0 +1,5 @@
+Event
+|where EventLog == 'Microsoft-Windows-Sysmon/Operational'
+|where EventID == 1
+| where tostring(parse_xml(EventData).DataItem.EventData.Data[4]['#text']) has "schtasks"
+| project TimeGenerated, Computer, Process=tostring(parse_xml(EventData).DataItem.EventData.Data[4]['#text']), CommandLine=tostring(parse_xml(EventData).DataItem.EventData.Data[10]['#text'])
